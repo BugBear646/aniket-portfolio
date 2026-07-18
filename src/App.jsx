@@ -1,5 +1,5 @@
 import Nav from "./components/Nav";
-import CursorGlow from "./components/CursorGlow";
+import CursorGlow from "./components/Cursorglow";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Education from "./components/Education";
