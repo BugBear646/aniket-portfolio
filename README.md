@@ -32,10 +32,10 @@ hunting through components; if it's text on the page, it's in there.
 | GitHub URL | `src/data.js` | `profile.socials.github` |
 | Twitter/X URL | `src/data.js` | `profile.socials.twitter`, leave `""` to hide the icon entirely |
 
-Also worth a pass: the `projects`, `experience`, and `skills` objects in
-`src/data.js` were filled in from what's on record, but you're the source
-of truth on your own career. Edit freely, nothing else needs to change
-when you do.
+Also double check the `projects`, `experience`, and `skills` objects in
+`src/data.js` — I filled these from what I know about your background, but
+you know it better. Edit freely; the components will pick up any changes
+automatically.
 
 ## Contact form setup (so messages actually reach you)
 
@@ -89,10 +89,8 @@ src/
     Projects.jsx       <- expandable project cards
     Experience.jsx     <- timeline
     Skills.jsx
-    Contact.jsx        <- form + socials
-    SignalTrace.jsx    <- the signature animated waveform element
-    CursorGlow.jsx     <- soft light that trails the cursor site-wide
-    ThemeToggle.jsx    <- dark/light switch in the nav
+    Contact.jsx        ← form + socials
+    SignalTrace.jsx    ← the signature animated waveform element
 api/
   contact.js           <- Vercel serverless function, handles form submits
 ```
