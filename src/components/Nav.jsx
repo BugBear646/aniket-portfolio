@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "./Themetoggle";
 
 const sections = [
   { id: "about", label: "about" },
