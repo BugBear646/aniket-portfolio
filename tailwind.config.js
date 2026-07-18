@@ -30,9 +30,14 @@ export default {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       backgroundImage: {
-        grid: "linear-gradient(to right, #ffffff08 1px, transparent 1px), linear-gradient(to bottom, #ffffff08 1px, transparent 1px)",
+        grid: "linear-gradient(to right, rgb(var(--color-text) / 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--color-text) / 0.05) 1px, transparent 1px)",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addVariant }) {
+      addVariant("theme-light", ".theme-light &");
+      addVariant("theme-dark", ".theme-dark &");
+    },
+  ],
 };

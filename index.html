@@ -9,6 +9,22 @@
       content="Aniket Kumar Jha — Product Manager building enterprise voice infrastructure and the automation behind it."
     />
     <title>Aniket Kumar Jha — Product Manager</title>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark";
+          document.documentElement.classList.add("theme-" + theme);
+        } catch (e) {
+          document.documentElement.classList.add("theme-dark");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

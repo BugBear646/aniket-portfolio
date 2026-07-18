@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 const sections = [
   { id: "about", label: "about" },
@@ -71,14 +72,17 @@ export default function Nav() {
           ))}
         </ul>
 
-        <a
-          href="https://topmate.io/aniket_jha"
-          target="_blank"
-          rel="noreferrer"
-          className="font-display text-xs border border-amber/40 text-amber px-4 py-2 rounded-md hover:bg-amber/10 transition-colors"
-        >
-          book a call
-        </a>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <a
+            href="https://topmate.io/aniket_jha"
+            target="_blank"
+            rel="noreferrer"
+            className="font-display text-xs border border-amber/40 text-amber px-4 py-2 rounded-md hover:bg-amber/10 transition-colors"
+          >
+            book a call
+          </a>
+        </div>
       </nav>
     </header>
   );

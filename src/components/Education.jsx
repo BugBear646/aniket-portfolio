@@ -1,21 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GraduationCap, Trophy, Medal, Calendar } from "lucide-react";
 import { education } from "../data";
 
-// Drop the real crest at /public/logos/iitkgp.svg (or .png) and it'll
-// pick it up automatically; falls back to the GraduationCap icon
-// until then, so a missing asset never breaks the layout.
-function InstitutionMark({ src, alt }) {
+// Two logo variants: a white mark for dark theme, a dark mark for light
+// theme. Swaps automatically based on the .theme-light/.theme-dark class
+// on <html>. Falls back to the GraduationCap icon if neither loads, so a
+// missing asset never breaks the layout.
+function InstitutionMark({ src, srcLight, alt }) {
   const [failed, setFailed] = useState(false);
+  const [isLight, setIsLight] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const update = () => setIsLight(root.classList.contains("theme-light"));
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const activeSrc = isLight && srcLight ? srcLight : src;
 
   return (
-    <div className="w-20 h-20 rounded-lg bg-[#0f141c] border border-line flex items-center justify-center shrink-0 overflow-hidden">
-      {!src || failed ? (
+    <div
+      className={`w-20 h-20 rounded-lg border flex items-center justify-center shrink-0 overflow-hidden ${
+        isLight && srcLight ? "bg-panel border-line" : "bg-panel2 border-line"
+      }`}
+    >
+      {!activeSrc || failed ? (
         <GraduationCap size={30} className="text-panel" strokeWidth={1.5} />
       ) : (
         <img
-          src={src}
+          src={activeSrc}
           alt={alt}
           onError={() => setFailed(true)}
           className="max-w-[72%] max-h-[72%] object-contain"
@@ -112,7 +129,11 @@ export default function Education() {
           <div className="pl-7 pr-6 py-7 md:pl-9 md:pr-8 md:py-8">
             <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-5">
               <div className="flex items-start gap-4 min-w-0">
-                <InstitutionMark src="/logos/iitkgp.png" alt="IIT Kharagpur" />
+                <InstitutionMark
+                  src="/logos/iitkgp.png"
+                  srcLight="/logos/iitkgp-dark.png"
+                  alt="IIT Kharagpur"
+                />
                 <div className="min-w-0">
                   <h3 className="font-display text-lg md:text-xl font-semibold text-text">
                     {education.institution}

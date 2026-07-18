@@ -21,7 +21,7 @@ export default function SignalTrace({
   height = 80,
   segments = 48,
   seed = 3,
-  color = "#E8A33D",
+  color = "rgb(var(--color-amber))",
   animated = true,
   strokeWidth = 1.5,
 }) {

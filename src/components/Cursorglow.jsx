@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // A soft, opaque light patch that follows the cursor around the page.
 // Uses refs + rAF instead of React state so it never triggers re-renders.
@@ -54,6 +54,18 @@ export default function CursorGlow() {
     };
   }, []);
 
+  const [blendMode, setBlendMode] = useState("screen");
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const updateBlend = () =>
+      setBlendMode(root.classList.contains("theme-light") ? "multiply" : "screen");
+    updateBlend();
+    const observer = new MutationObserver(updateBlend);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
       ref={glowRef}
@@ -62,7 +74,7 @@ export default function CursorGlow() {
       style={{
         background:
           "radial-gradient(circle, rgb(var(--color-amber) / 0.10) 0%, rgb(var(--color-amber) / 0.05) 35%, transparent 70%)",
-        mixBlendMode: "screen",
+        mixBlendMode: blendMode,
         willChange: "transform",
       }}
     />

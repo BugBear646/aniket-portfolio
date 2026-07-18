@@ -12,9 +12,6 @@ export default function Hero() {
       {/* background grid */}
       <div className="absolute inset-0 bg-grid bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_10%,transparent_70%)]" />
 
-      {/* ambient glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber/[0.06] rounded-full blur-[120px]" />
-
       <div className="relative z-10 max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
