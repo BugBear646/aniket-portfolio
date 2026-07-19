@@ -32,6 +32,15 @@ export default {
       backgroundImage: {
         grid: "linear-gradient(to right, rgb(var(--color-text) / 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--color-text) / 0.05) 1px, transparent 1px)",
       },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 60s linear infinite",
+      },
     },
   },
   plugins: [

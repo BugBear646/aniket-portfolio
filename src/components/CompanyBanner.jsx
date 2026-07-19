@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 // Banner-only company list — separate from the `companies` data used in the
 // Experience section. Edit logos, names, and click-through URLs here directly.
@@ -100,7 +99,7 @@ const bannerCompanies = [
     logo: "/logos/banner/banner_teamkart.png",
     logoLight: "/logos/banner_white/banner_teamkart.png",
     url: "https://teamkart.org/",
-    scaleDark: 1.35,
+    scaleDark: 1.45,
     scaleLight: 1.75,
   },
 ];
@@ -202,19 +201,23 @@ export default function CompanyBanner() {
         <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-base to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-base to-transparent z-10" />
 
-        <motion.div
-          className="flex w-max items-center gap-28"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{
-            duration: 60,
-            repeat: Infinity,
-            ease: "linear",
-          }}
+        {/* Plain CSS animation (see `marquee` in tailwind.config.js), not
+            Framer Motion's `animate` prop. A Framer keyframe animation
+            restarts from its first frame whenever the component re-renders
+            with a new `animate` object reference — which happens every time
+            `theme` changes (dark/light toggle), causing a visible jump back
+            to the start. A CSS animation runs entirely in the browser
+            compositor, independent of React's render cycle, so switching
+            themes never interrupts or resets its position. */}
+
+        <div
+          className="flex w-max items-center gap-28 animate-marquee"
+          style={{ willChange: "transform" }}
         >
           {track.map((company, i) => (
             <CompanyTile company={company} theme={theme} key={`${company.name}-${i}`} />
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
