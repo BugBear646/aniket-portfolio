@@ -68,7 +68,7 @@ export default function Hero() {
             rel="noreferrer"
             className="font-display text-sm border border-line text-text px-6 py-3 rounded-md hover:border-amber/50 hover:text-amber transition-colors"
           >
-            resume ↓
+            Resume ↓
           </a>
         </motion.div>
       </div>
