@@ -41,7 +41,7 @@ export default function About() {
           transition={{ staggerChildren: 0.1 }}
           className="grid md:grid-cols-[1fr_1.4fr] gap-12 md:gap-16"
         >
-          <div className="space-y-5 order-2 md:order-1">
+          <div className="space-y-5 order-1">
             <span className="font-display text-xs text-teal">01 / about</span>
             <h2 className="font-display text-2xl md:text-3xl font-bold text-text mt-3 leading-snug">
               Product,
@@ -64,7 +64,7 @@ export default function About() {
           <motion.div
             variants={fadeUp}
             transition={{ duration: 0.6 }}
-            className="order-1 md:order-2 flex flex-col items-center gap-5 md:pt-32"
+            className="order-2 flex flex-col items-center gap-5 md:pt-32"
           >
             <div className="relative w-full max-w-sm aspect-[4/3]">
               {/* Portrait blended into the dark background: native 4:3
