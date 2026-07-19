@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 // Banner-only company list — separate from the `companies` data used in the
 // Experience section. Edit logos, names, and click-through URLs here directly.
+//
+// THEME-AWARE LOGOS: dark and light themes use separate source files, since
+// the dark-theme marks are designed to sit on a dark background (and are
+// desaturated via CSS to a uniform gray, revealing color on hover) while the
+// light-theme marks are already colored for a light background and are shown
+// as-is, no grayscale.
+//   logo       → dark-theme file, from /logos/banner/
+//   logoLight  → light-theme file, from /logos/banner_white/
 //
 // SIZING: every logo is capped to the same fixed HEIGHT (not width) and
 // scaled with object-contain — so each logo's own aspect ratio determines
@@ -13,81 +21,129 @@ import { motion } from "framer-motion";
 //
 // Source files differ in how tightly they're cropped around the actual
 // mark — some have generous padding, some are edge-to-edge — so the same
-// box height alone doesn't make them *look* the same size. `scale` (a
-// multiplier applied to the target height, default 1) compensates per logo.
-// Calibrated against Sprinklr as the reference:
+// box height alone doesn't make them *look* the same size. `scaleDark` and
+// `scaleLight` (multipliers applied to the target height, default 1 each)
+// compensate per logo, per theme, calibrated against Sprinklr as the
+// reference:
 //   > 1  → logo reads smaller than Sprinklr at baseline, sized up
 //   < 1  → logo reads larger than Sprinklr at baseline, sized down
+//
+// Dark and light source files for the same company are often cropped
+// differently, so the two scales are set and tuned independently.
 const bannerCompanies = [
   {
     name: "Sprinklr",
     logo: "/logos/banner/banner_sprinklr.png",
+    logoLight: "/logos/banner_white/banner_sprinklr.png",
     url: "https://www.sprinklr.com",
+    scaleDark: 1.0,
+    scaleLight: 1.75,
   },
   {
     name: "Merlin AI by Foyer",
     logo: "/logos/banner/banner_merlin.png",
+    logoLight: "/logos/banner_white/banner_merlin.png",
     url: "https://www.getmerlin.in/",
-    scale: 0.8,
+    scaleDark: 0.8,
+    scaleLight: 1.75,
   },
   {
     name: "Mercedes-Benz Research & Development India",
     logo: "/logos/banner/banner_mercedes.png",
+    logoLight: "/logos/banner_white/banner_mercedes.png",
     url: "https://www.mbrdi.co.in",
-    scale: 1.5,
+    scaleDark: 1.5,
+    scaleLight: 1.5,
   },
   {
     name: "Unstop",
     logo: "/logos/banner/banner_unstop.png",
+    logoLight: "/logos/banner_white/banner_unstop.png",
     url: "https://unstop.com",
-    scale: 0.8,
+    scaleDark: 0.8,
+    scaleLight: 0.7,
   },
   {
     name: "IEEE IIT KGP Student Branch",
     logo: "/logos/banner/banner_ieee.png",
+    logoLight: "/logos/banner_white/banner_ieee.png",
     url: "https://sac.iitkgp.ac.in/",
-    scale: 0.7,
+    scaleDark: 0.7,
+    scaleLight: 0.65,
   },
   {
     name: "Embibe",
     logo: "/logos/banner/banner_embibe.png",
+    logoLight: "/logos/banner_white/banner_embibe.png",
     url: "https://www.embibe.com",
-    scale: 1.4,
+    scaleDark: 1.4,
+    scaleLight: 1.4,
   },
   {
     name: "Neilsoft",
     logo: "/logos/banner/banner_neilsoft.png",
+    logoLight: "/logos/banner_white/banner_neilsoft.png",
     url: "https://neilsoft.com",
-    scale: 0.8,
+    scaleDark: 0.8,
+    scaleLight: 2.75,
   },
   {
     name: "Student's Alumni Cell, IIT Kharagpur",
     logo: "/logos/banner/banner_sac.png",
+    logoLight: "/logos/banner_white/banner_sac.png",
     url: "https://sac.iitkgp.ac.in/",
-    scale: 1.25,
+    scaleDark: 1.25,
+    scaleLight: 1.25,
   },
   {
     name: "TeamKart, IIT Kharagpur",
     logo: "/logos/banner/banner_teamkart.png",
+    logoLight: "/logos/banner_white/banner_teamkart.png",
     url: "https://teamkart.org/",
-    scale: 1.35,
+    scaleDark: 1.35,
+    scaleLight: 1.75,
   },
 ];
 
-// Global multiplier applied on top of each logo's individual `scale`.
+// Global multiplier applied on top of each logo's individual scale.
 // Brings every logo down to 80% of its previous rendered size.
 const GLOBAL_SCALE = 0.8;
 
-function CompanyTile({ company }) {
+// Reads the active theme from the `theme-light` / `theme-dark` class that
+// ThemeToggle sets on <html>, and stays in sync with it. No React context
+// exists for theme, so this mirrors ThemeToggle's own mechanism (class on
+// documentElement) via a MutationObserver rather than introducing one.
+function useTheme() {
+  const getTheme = () =>
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("theme-light")
+      ? "light"
+      : "dark";
+
+  const [theme, setTheme] = useState(getTheme);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const observer = new MutationObserver(() => setTheme(getTheme()));
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
+
+function CompanyTile({ company, theme }) {
   const [imgFailed, setImgFailed] = useState(false);
 
-  // Combine per-logo scale (default 1) with the global scale, and apply it
-  // via height percentage rather than a CSS `transform`. A transform only
-  // changes how the image *looks* — the layout box stays full-size — which
-  // is what was causing uneven gaps between logos of different scales.
-  // Sizing the box itself keeps every tile's footprint proportional to its
-  // visual size, so a fixed `gap` on the container reads as even spacing.
-  const effectiveScale = (company.scale ?? 1) * GLOBAL_SCALE;
+  const isLight = theme === "light";
+  const src = isLight ? company.logoLight ?? company.logo : company.logo;
+
+  // Each company sets its own scaleDark and scaleLight independently, since
+  // the dark and light source files can be cropped differently.
+  const themeScale = isLight
+    ? company.scaleLight ?? 1
+    : company.scaleDark ?? 1;
+  const effectiveScale = themeScale * GLOBAL_SCALE;
 
   return (
     <a
@@ -103,15 +159,21 @@ function CompanyTile({ company }) {
         // aspect ratio decide how wide it renders, so a wide-and-short mark
         // (e.g. IEEE, ~3.4:1) still fills the full target height instead of
         // being width-capped and shrinking vertically inside a fixed box.
-        // `scale` (if set) compensates for source files cropped tighter
-        // than the rest. grayscale applied uniformly so every logo reads
-        // as the same tone, then reveals full color on hover.
+        // `scaleDark`/`scaleLight` compensate for source files cropped
+        // tighter than the rest, independently per theme.
+        // Dark theme: grayscale at rest, full color on hover.
+        // Light theme: logos are pre-colored for a light background, so no
+        // grayscale — just a subtle opacity dip that lifts on hover.
         <img
-          src={company.logo}
+          src={src}
           alt={company.name}
           onError={() => setImgFailed(true)}
           style={{ height: `${effectiveScale * 100}%` }}
-          className="w-auto max-w-[170px] object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+          className={
+            isLight
+              ? "w-auto max-w-[170px] object-contain opacity-80 group-hover:opacity-100 transition-all duration-300"
+              : "w-auto max-w-[170px] object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+          }
         />
       ) : (
         // Text fallback shown until a real logo file is added at company.logo
@@ -124,6 +186,8 @@ function CompanyTile({ company }) {
 }
 
 export default function CompanyBanner() {
+  const theme = useTheme();
+
   // Duplicate the list so the marquee loops seamlessly.
   const track = [...bannerCompanies, ...bannerCompanies];
 
@@ -148,7 +212,7 @@ export default function CompanyBanner() {
           }}
         >
           {track.map((company, i) => (
-            <CompanyTile company={company} key={`${company.name}-${i}`} />
+            <CompanyTile company={company} theme={theme} key={`${company.name}-${i}`} />
           ))}
         </motion.div>
       </div>
