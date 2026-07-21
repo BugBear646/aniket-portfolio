@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import Nav from "./components/Nav";
 import CursorGlow from "./components/Cursorglow";
 import Hero from "./components/Hero";
@@ -14,6 +15,7 @@ export default function App() {
   return (
     <div className="bg-base min-h-screen overflow-x-hidden selection:bg-amber selection:text-base">
       <CursorGlow />
+      <Analytics />
       <Nav />
       <main>
         <Hero />
